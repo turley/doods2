@@ -21,6 +21,9 @@ docker-base-amd64:
 docker-base-amd64-gpu:
 	docker buildx build --pull --push -f docker/Dockerfile.base.amd64-gpu --tag docker.io/snowzach/doods2:base-amd64-gpu .
 
+docker-base-amd64-gpu-amd:
+	docker buildx build --pull -f docker/Dockerfile.base.amd64-gpu-amd --tag base-amd64-gpu-amd .
+
 docker-base: docker-base-armv7l docker-base-aarch64 docker-base-amd64-noavx docker-base-amd64 docker-base-amd64-gpu
 
 docker-armv7l:
@@ -37,6 +40,9 @@ docker-amd64:
 
 docker-amd64-gpu:
 	docker buildx build --pull --push --build-arg TAG="amd64-gpu" -f docker/Dockerfile -t docker.io/snowzach/doods2:amd64-gpu .
+
+docker-amd64-gpu-amd:
+	docker buildx build --pull -f docker/Dockerfile-gpu-amd -t amd64-gpu-amd .
 
 docker: docker-armv7l docker-aarch64 docker-amd64 docker-amd64-noavx docker-amd64-gpu
 	docker manifest push --purge docker.io/snowzach/doods2:latest
