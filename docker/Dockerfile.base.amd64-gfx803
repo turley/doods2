@@ -1,0 +1,57 @@
+FROM ubuntu:20.04
+
+
+WORKDIR /root
+
+# Install dependencies
+ENV DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    curl \
+    git \
+    gnupg \
+    libjpeg8 \
+    libpng16-16 \
+    libavcodec58 \
+    libavformat58 \
+    libswscale5 \
+    libgl1 \
+    libglib2.0-0 \
+    unzip \
+    python3 \
+    python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* 
+
+
+# Install ROCm
+RUN wget https://repo.radeon.com/amdgpu-install/5.3/ubuntu/focal/amdgpu-install_5.3.50300-1_all.deb
+RUN apt-get install -y ./amdgpu-install_5.3.50300-1_all.deb
+RUN rm -f amdgpu-install_5.3.50300-1_all.deb
+RUN yes | amdgpu-install --usecase=graphics,rocm,lrt,hip,hiplibsdk --no-dkms
+RUN apt-get install -y libopenmpi-dev libopenblas-dev miopen-hip
+RUN ln -s libroctx64.so /opt/rocm/lib/libroctx64.so.1
+RUN ln -s libroctracer64.so /opt/rocm/lib/libroctracer64.so.1
+
+## Install PyTorch and dependencies
+RUN wget https://github.com/xuhuisheng/rocm-gfx803/releases/download/rocm530/hsa-rocr_1.7.0.50300-63.20.04_amd64.deb
+RUN wget https://github.com/xuhuisheng/rocm-gfx803/releases/download/rocm530/rocblas_2.45.0.50300-63.20.04_amd64.deb
+RUN wget https://github.com/xuhuisheng/rocm-gfx803/releases/download/rocm500/torch-1.11.0a0+git503a092-cp38-cp38-linux_x86_64.whl
+RUN wget https://github.com/xuhuisheng/rocm-gfx803/releases/download/rocm500/torchvision-0.12.0a0+2662797-cp38-cp38-linux_x86_64.whl
+RUN apt-get install --allow-downgrades -y ./hsa-rocr_1.7.0.50300-63.20.04_amd64.deb ./rocblas_2.45.0.50300-63.20.04_amd64.deb
+RUN yes | pip3 install wheel tensorflow
+
+### These packages need to be installed with the same command or it won't work
+### (because installing torchvision would uninstall torch and install the stock
+### verion from pypi instead).
+RUN yes | pip3 install --force-reinstall torch-1.11.0a0+git503a092-cp38-cp38-linux_x86_64.whl torchvision-0.12.0a0+2662797-cp38-cp38-linux_x86_64.whl
+ENV LD_LIBRARY_PATH="/opt/rocm/lib"
+RUN echo 'export LD_LIBRARY_PATH="/opt/rocm/lib"' >> /root/.bashrc
+
+# Install PyTorch dependencies
+ADD requirements.pytorch.txt /tmp/requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+# Install python libs
+ADD requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt

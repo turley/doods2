@@ -1,4 +1,4 @@
-FROM base-amd64-gpu-amd as base
+FROM doods2-base-amd64-gfx803 as base
 
 COPY --from=docker.io/snowzach/doods2:base-config /opt/doods/models /opt/doods/models
 COPY --from=docker.io/snowzach/doods2:base-config /opt/doods/config.yaml /opt/doods/config.yaml

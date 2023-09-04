@@ -1,3 +1,18 @@
+### Modified to run with ROCm on old gfx803-based GPU (RX590)
+
+Build local docker image:
+```
+make docker-base-amd64-gfx803
+make docker-amd64-gfx803
+```
+
+Run with:
+```
+docker run -it --rm --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -p 8080:8080 doods2-amd64-gfx803
+```
+
+---
+
 # DOODS2 - Return of DOODS
 Dedicated Open Object Detection Service - Yes, it's a backronym...
 
