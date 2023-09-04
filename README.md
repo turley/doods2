@@ -1,4 +1,4 @@
-### Modified to run with ROCm on old gfx803-based GPU (RX590)
+### Modified to run with ROCm on old gfx803-based GPU (AMD Radeon RX 590)
 
 Build local docker image:
 ```
