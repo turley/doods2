@@ -23,6 +23,12 @@ except ModuleNotFoundError:
     logger.info('PyTorch not installed...')
 
 try:
+    from detectors.ultralytics import Ultralytics
+    detectors['ultralytics'] = Ultralytics
+except ModuleNotFoundError:
+    logger.info('Ultralytics not installed...')
+
+try:
     from detectors.deepstack import DeepStack
     detectors['deepstack'] = DeepStack
 except ModuleNotFoundError:

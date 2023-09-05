@@ -10,6 +10,8 @@ class DoodsDetectorConfig(BaseSettings):
     labelsStartFromZero: Optional[bool] = False
     hwAccel: Optional[bool] = False
     numThreads: Optional[int] = 2
+    fullImageSize: Optional[bool] = False
+    halfPrecision: Optional[bool] = False
     class Config:
         extra = Extra.ignore
 
